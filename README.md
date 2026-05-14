@@ -1,383 +1,359 @@
 <div align="center">
 
-```
-╔═══════════════════════════════════════════════════════════════╗
-║                                                               ║
-║    ██████╗ ███████╗██████╗     ████████╗███████╗ █████╗      ║
-║    ██╔══██╗██╔════╝██╔══██╗       ██╔══╝██╔════╝██╔══██╗     ║
-║    ██████╔╝█████╗  ██║  ██║       ██║   █████╗  ███████║     ║
-║    ██╔══██╗██╔══╝  ██║  ██║       ██║   ██╔══╝  ██╔══██║     ║
-║    ██║  ██║███████╗██████╔╝       ██║   ███████╗██║  ██║     ║
-║    ╚═╝  ╚═╝╚══════╝╚═════╝        ╚═╝   ╚══════╝╚═╝  ╚═╝     ║
-║                                                               ║
-║          ⚔️  ADVERSARIAL  IDS  ⚔️                             ║
-╚═══════════════════════════════════════════════════════════════╝
-```
+# 🛡️ Adversarial IDS
+### Red Teaming & Blue Teaming a Neural Network Intrusion Detection System
 
-# Adversarial Machine Learning appliqué aux IDS
-### Red Teaming & Blue Teaming d'un réseau de neurones MLP sous PyTorch
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.9+-red.svg)](https://pytorch.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/Paper-UNDER%20REVIEW-orange)]()
+[![Made with](https://img.shields.io/badge/Made%20with-%E2%9D%A4%EF%B8%8F-red)]()
 
----
-
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
-[![Dataset](https://img.shields.io/badge/Dataset-UNSW--NB15-00C896?style=for-the-badge)](https://research.unsw.edu.au/projects/unsw-nb15-dataset)
-[![INPT](https://img.shields.io/badge/INPT-2025--2026-8B0000?style=for-the-badge)](https://www.inpt.ac.ma)
-[![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)]()
-
-> *"Un modèle excellent sur données propres peut être trivialement compromis par un attaquant informé.  
-> La robustesse s'acquiert, se certifie et se maintient de manière itérative."*
+> *Can a deep learning‑based IDS be truly robust against realistic adversarial attacks?*
+> This project answers by **building**, **breaking**, and **fixing** an MLP intrusion detector on the UNSW‑NB15 dataset — using physically‑constrained adversarial examples and adversarial training.
 
 </div>
 
 ---
 
-## 🎯 Vue d'Ensemble
+## 🔥 Overview
 
-Ce projet explore la **vulnérabilité et la robustification** d'un Système de Détection d'Intrusion (IDS) basé sur le Deep Learning face aux **attaques adversariales réalistes**. L'originalité centrale : nos attaques respectent les **contraintes physiques du trafic réseau** — elles ne modifient que ce qu'un vrai attaquant pourrait modifier.
+Modern Intrusion Detection Systems (IDS) rely heavily on deep learning. But are they secure?
+**Spoiler: Not by default.**
 
-### Le Cycle Complet : Build → Break → Fix
+We take a complete **build‑break‑fix** cycle:
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
-│   🏗️  BUILD     │────▶│   🔴 RED TEAM   │────▶│   🔵 BLUE TEAM  │
+│   ✅  BUILD     │────▶│   🔴 RED TEAM   │────▶│   🔵 BLUE TEAM  │
 │                 │     │                 │     │                 │
-│  IDS Baseline   │     │  CPGD  │  PSO   │     │  Adversarial    │
+│  MLP-based IDS  │     │  CPGD  │  PSO   │     │  Adversarial    │
 │  F1 = 91.52%    │     │ 53.23% │ 97.95% │     │  Training       │
 │                 │     │  ASR   │  ASR   │     │  CPGD → 2.41%   │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
----
+- ✅ **Build** a high‑performance MLP‑based IDS (91.52% F1‑score)
+- 🔴 **Red Team** it with two physically‑realistic attacks: **CPGD** (white‑box) and **PSO** (black‑box)
+- 🔵 **Blue Team** it using adversarial training to gain cross‑attack robustness
 
-## 📊 Résultats en un Coup d'Œil
-
-<div align="center">
-
-| Phase | Métrique | Modèle Naïf | Modèle Vacciné | Delta |
-|:------|:---------|:-----------:|:--------------:|:-----:|
-| **Classification** | Précision | 98.50% | ~97.8% | -0.7% |
-| | Rappel | 85.46% | ~88.2% | **+2.7%** ✅ |
-| | F1-Score | 91.52% | ~92.8% | **+1.3%** ✅ |
-| **Red Team** | ASR – CPGD (Boîte Blanche) | 53.23% | **2.41%** | 🛡️ -95.5% |
-| | ASR – PSO (Boîte Noire) | 97.95% | **49.61%** | 🛡️ -49.3% |
-
-</div>
-
-> **Observation clé :** La vaccination adversariale *améliore* légèrement le rappel sur données propres — les exemples adversariaux contraints enrichissent le jeu d'entraînement de manière constructive.
+The result? A model that resists its training attack (**2.41% ASR**) and significantly reduces the black‑box threat (**97.95% → 49.61% ASR**) — without sacrificing accuracy.
 
 ---
 
-## 🧠 Architecture
+## ✨ Key Contributions
 
-### Le Modèle MLP Baseline
-
-```python
-Input (d=42 features)
-        │
-        ▼
-┌───────────────────┐
-│  Linear(42 → 64)  │
-│  ReLU             │
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│  Linear(64 → 32)  │
-│  ReLU             │
-└───────────────────┘
-        │
-        ▼
-┌───────────────────┐
-│  Linear(32 → 1)   │  ──▶  σ(ŷ) ≥ 0.5  →  Attaque
-│  (logit)          │  ──▶  σ(ŷ) < 0.5  →  Bénin
-└───────────────────┘
-```
-
-**Perte :** Binary Cross-Entropy with Logits  
-**Optimiseur :** Adam (lr=1e-3, weight decay=1e-4)  
-**Entraînement :** 20 époques, batch size 256
+| Contribution | Description |
+|:-------------|:------------|
+| 🧠 **Physically‑constrained attacks** | We respect network causality: you can't reduce packet counts or session duration after the fact. Our projection operator $\mathcal{P}_c$ ensures every adversarial example is operationally realizable. |
+| ⚡ **Black‑box beats white‑box** | PSO (97.95% ASR) almost doubles CPGD (53.23% ASR) — revealing dangerous non‑convex blind spots that gradient‑based attacks miss. |
+| 🛡️ **Cross‑attack robustness** | Training only against CPGD cuts PSO's success rate by half, proving that adversarial training generalizes beyond the attack seen. |
+| 📊 **Complete pipeline** | From pre‑processing (42 numeric features, z‑score normalisation) to PyTorch training, attack generation, and evaluation — fully reproducible. |
 
 ---
 
-## 📁 Structure du Projet
+## 📁 Dataset: UNSW‑NB15
 
-```
-adversarial-ids/
-│
-├── 📂 data/
-│   ├── UNSW_NB15_training-set.csv
-│   └── UNSW_NB15_testing-set.csv
-│
-├── 📂 src/
-│   ├── 🔧 preprocessing.py        # Pipeline z-score, split stratifié
-│   ├── 🏗️  model.py                # Architecture MLP PyTorch
-│   ├── 🔴 attacks/
-│   │   ├── cpgd.py               # Constrained PGD (boîte blanche)
-│   │   └── pso.py                # Particle Swarm Optimization (boîte noire)
-│   └── 🔵 defense/
-│       └── adversarial_training.py  # Boucle min-max de Madry
-│
-├── 📂 notebooks/
-│   ├── 01_baseline.ipynb
-│   ├── 02_red_teaming.ipynb
-│   └── 03_blue_teaming.ipynb
-│
-├── 📂 results/
-│   └── metrics_summary.json
-│
-├── 📄 rapport.pdf
-└── 📄 README.md
-```
+We use the **UNSW‑NB15** benchmark, a modern alternative to KDD'99 with realistic attack families.
+
+| Property | Value |
+|:---------|:------|
+| Instances | ~82,500 |
+| Features (selected) | 42 (numeric only) |
+| Classes | Binary (Benign=0, Attack=1) |
+| Attack families | DoS, Exploits, Fuzzers, Generic, Reconnaissance, Shellcode, Worms, Backdoor, Analysis |
+| Class balance | ~51% / 49% |
+
+👉 **Pre‑processing:** remove non‑numeric fields (`proto`, `service`, `state`), standardise (z‑score on training set only), stratified 80/20 split.
 
 ---
 
-## ⚔️ Red Teaming
+## 🧠 Model Architecture (Baseline)
 
-### Attaque 1 — CPGD : Boîte Blanche
+A shallow **Multi‑Layer Perceptron (MLP)** implemented in PyTorch:
 
-Le **Constrained Projected Gradient Descent** adapte l'attaque PGD de Madry en intégrant une projection physique à chaque itération.
+$$\mathbf{h}_1 = \text{ReLU}(\mathbf{W}_1\mathbf{x} + \mathbf{b}_1), \quad \mathbf{W}_1 \in \mathbb{R}^{64 \times 42}$$
+$$\mathbf{h}_2 = \text{ReLU}(\mathbf{W}_2\mathbf{h}_1 + \mathbf{b}_2), \quad \mathbf{W}_2 \in \mathbb{R}^{32 \times 64}$$
+$$\hat{y} = \mathbf{w}_3^\top \mathbf{h}_2 + b_3$$
 
-**L'intuition :** Un attaquant peut ajouter du padding à ses paquets ou injecter du délai — mais il ne peut pas voyager dans le temps pour réduire la durée d'une session déjà terminée.
-
-```python
-for t in range(T):
-    g = ∇_x L_BCE(f(x_t), y=1)      # Gradient ascendant
-    x_tilde = x_t + ε · sign(g)      # Pas FGSM
-    x_{t+1} = P_C(x_tilde)           # Projection physique ← LA CLÉ
-```
-
-**Projection physique P_C :**
-```
-[P_C(x̃)]_j = max(x̃_j, x_j)          si feature unilatérale (durée, octets...)
-             clip(x̃_j, x_j-δ, x_j+δ)  sinon (ratios, statistiques dérivées)
-```
+- **Loss:** Binary Cross‑Entropy with Logits
+- **Optimizer:** Adam (lr=1e-3, weight decay=1e-4)
+- **Batch size** = 256, **Epochs** = 20
 
 ```
-📊 Résultat CPGD : ASR = 53.23%
-   L'IDS est trompé sur plus d'une attaque sur deux.
+Input (d=42)  →  [Linear 64 | ReLU]  →  [Linear 32 | ReLU]  →  [Linear 1]  →  σ(ŷ) ≥ 0.5 → Attack
 ```
+
+**Baseline performance (clean test set)**
+
+| Metric | Value |
+|:-------|:-----:|
+| Precision | 98.50% |
+| Recall | 85.46% |
+| F1‑Score | **91.52%** |
+
+> ⚠️ Note: 14.5% of attacks are already missed by the vanilla model — a structural blind spot that adversarial attacks will ruthlessly exploit.
 
 ---
 
-### Attaque 2 — PSO : Boîte Noire
+## 🔴 Red Teaming: Offensive Adversarial ML
 
-La **Particle Swarm Optimization** n'a besoin d'aucun gradient — uniquement de la sortie de l'IDS (0 ou 1). Chaque particule est un exemple adversarial candidat, l'essaim converge vers les angles morts du modèle.
+We generate adversarial examples $x^{adv}$ that flip the model's prediction from **attack (1) → benign (0)**, while staying physically valid.
 
-```
-Essaim de N=30 particules, T=40 itérations
+### 🔹 Constraint Projection $\mathcal{P}_c$ — The Game Changer
 
-v_{i}^{t+1} = ω·v_i^t  +  c₁r₁(pBest_i - x_i^t)  +  c₂r₂(gBest - x_i^t)
-                              ↑                              ↑
-                       mémoire individuelle          mémoire collective
-```
+Unlike image attacks, **network features cannot be arbitrarily modified**.
+We partition features into two groups:
 
-| Paramètre | Valeur |
-|:----------|:------:|
-| Taille essaim N | 30 |
-| Itérations T | 40 |
-| Inertie ω | 0.7 |
-| Cognitif c₁ | 1.5 |
+- **Unilateral** *(can only increase)*: `dur`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `sload`, `dload` — because you cannot reduce past traffic.
+- **Free** *(bidirectional)*: derived ratios, statistics.
+
+$$[\mathcal{P}_c(\tilde{x})]_j = \begin{cases} \max(\tilde{x}_j, x_j) & \text{if unilateral} \\ \text{clip}(\tilde{x}_j,\, x_j - \delta_j,\, x_j + \delta_j) & \text{otherwise} \end{cases}$$
+
+> This makes our attacks **operationally realistic** — not just mathematical curiosities.
+
+---
+
+### ⚔️ Attack 1: Constrained Projected Gradient Descent (CPGD)
+
+**White‑box** (full model access, gradients). Iterative FGSM + projection:
+
+$$\mathbf{g}^{(t)} = \nabla_{\mathbf{x}} \mathcal{L}_{\text{BCE}}(f(\mathbf{x}^{(t)}), 1)$$
+$$\tilde{\mathbf{x}}^{(t+1)} = \mathbf{x}^{(t)} + \epsilon \cdot \operatorname{sign}(\mathbf{g}^{(t)})$$
+$$\mathbf{x}^{(t+1)} = \mathcal{P}_c(\tilde{\mathbf{x}}^{(t+1)})$$
+
+| Attack Success Rate (ASR) | **53.23%** |
+|:--------------------------|:----------:|
+
+The model is fooled on more than **one out of two attacks** — a significant vulnerability.
+
+---
+
+### 🐝 Attack 2: Particle Swarm Optimization (PSO)
+
+**Black‑box** (only predictions, no gradients). A swarm of $N$ particles explores the constrained space, moving with inertia and social/cognitive components:
+
+$$\mathbf{v}_{i}^{(t+1)} = \omega\mathbf{v}_i^{(t)} + c_1 r_1 (\mathbf{pbest}_i - \mathbf{x}_i^{(t)}) + c_2 r_2 (\mathbf{gbest} - \mathbf{x}_i^{(t)})$$
+
+| Parameter | Value |
+|:----------|:-----:|
+| Swarm size N | 30 |
+| Iterations T | 40 |
+| Inertia ω | 0.7 |
+| Cognitive c₁ | 1.5 |
 | Social c₂ | 1.5 |
 
-```
-🚨 Résultat PSO : ASR = 97.95%
-   Près de 98 attaques sur 100 passent inaperçues.
-```
+| Attack Success Rate (ASR) | **97.95%** |
+|:--------------------------|:----------:|
+
+The black‑box swarm **almost completely evades** the IDS — a striking paradox: *no gradients → higher success*.
 
 ---
 
-### ⚠️ Le Paradoxe Boîte Blanche / Boîte Noire
+### 📊 Comparison
 
-> La boîte noire (PSO, 97.95%) est **presque deux fois plus efficace** que la boîte blanche (CPGD, 53.23%).
+| Attack | Paradigm | Knowledge | ASR | Complexity |
+|:-------|:---------|:----------|:----|:-----------|
+| CPGD | Gradient | White‑box | 53.23% | $O(T \cdot d)$ |
+| PSO | Swarm | Black‑box | **97.95%** | $O(T \cdot N \cdot d)$ |
 
-**Explication :** Le CPGD suit le gradient local qui, dans l'espace contraint, peut être partiellement annulé par la projection P_C — un phénomène de **gradient masking**. Le PSO explore l'espace de manière stochastique et découvre des bassins adversariaux inaccessibles au gradient. Ce résultat contre-intuitif est un signal d'alarme : **l'attaque la plus accessible est la plus dévastatrice**.
+**Why does black‑box work better?**
+- The constrained gradient landscape is non‑convex and has "masked" gradients — local ascent gets stuck.
+- PSO's stochastic global search discovers adversarial basins that gradient‑based methods cannot reach.
 
 ---
 
-## 🛡️ Blue Teaming
+## 🔵 Blue Teaming: Adversarial Training
 
-### Entraînement Adversarial (Paradigme de Madry)
+We apply Madry's **min‑max** formulation:
 
-L'objectif standard est remplacé par un problème **min-max** :
+$$\min_{\theta} \; \mathbb{E}_{(\mathbf{x}, y) \sim \mathcal{D}} \left[ \max_{\mathbf{x}' \in \mathcal{C}(\mathbf{x})} \mathcal{L}(f_{\theta}(\mathbf{x}'), y) \right]$$
 
-```
-min_θ E_(x,y)~D [ max_{x'∈C(x)} L(f_θ(x'), y) ]
-                   ↑
-           Le problème interne génère les exemples les plus difficiles
-```
-
-**Implémentation :** CPGD rapide (K=5 itérations) intra-boucle d'entraînement.
+Training loop (5‑step fast CPGD per batch):
 
 ```python
 for epoch in range(E):
     for X_batch, y_batch in dataloader:
-        # 1. Générer les exemples adversariaux
-        X_adv = cpgd_fast(X_batch, model, steps=5)
-        
-        # 2. Concaténer propres + adversariaux
-        X_aug = concat(X_batch, X_adv)
-        y_aug = concat(y_batch, y_batch)  # labels inchangés
-        
-        # 3. Mise à jour du modèle
-        loss = BCE(model(X_aug), y_aug)
-        optimizer.step(loss)
+        X_adv = cpgd_fast(X_batch, model)   # inner max
+        X_total = concat(X_batch, X_adv)
+        y_total = concat(y_batch, y_batch)
+        loss = BCE_with_logits(model(X_total), y_total)
+        loss.backward()
+        optimizer.step()
 ```
 
-> **Garantie d'intégrité :** Les exemples adversariaux sont générés **uniquement sur le Training Set**. Le Test Set n'est jamais exposé pendant l'entraînement.
-
-### Résultats Post-Vaccination
-
-```
-CPGD  :  53.23%  ──────────────────────▶  2.41%   (-95.5%) 🛡️🛡️🛡️
-PSO   :  97.95%  ──────────────▶  49.61%           (-49.3%) 🛡️🛡️
-```
-
-La **robustesse croisée** au PSO (jamais vu pendant la défense) s'explique par le fait que l'entraînement adversarial CPGD force le modèle à apprendre des représentations plus généralisables — la frontière de décision robuste aux perturbations de gradient l'est aussi aux perturbations évolutionnaires.
+> ⚠️ **No data leakage:** adversarial examples are generated only from the training set.
 
 ---
 
-## 🚀 Installation & Usage
+## 📈 Results: Before vs After Vaccination
 
+| Phase | Metric | Baseline Model | Adversarially Trained | Delta |
+|:------|:-------|:--------------:|:---------------------:|:-----:|
+| **Clean classification** | Precision | 98.50% | ≈97.8% | -0.7% |
+| | Recall | 85.46% | ≈88.2% | **+2.7%** ✅ |
+| | F1‑Score | 91.52% | ≈92.8% | **+1.3%** ✅ |
+| **Red Teaming** | ASR – CPGD (white‑box) | 53.23% | **2.41%** | 🛡️ -95.5% |
+| | ASR – PSO (black‑box) | 97.95% | **49.61%** | 🛡️ -49.3% |
+
+### 🔥 Key Insights
+
+- ✅ **Robustness without degradation:** Recall even *improves* slightly — adversarial examples act as a constructive data augmentation.
+- 🧬 **Cross‑attack transfer:** Training only against CPGD cuts PSO's success rate in half. The model learns more general decision boundaries.
+- ⚠️ **Residual risk:** PSO still fools the model in 49.6% of cases → future work must include mixed adversarial training.
+
+---
+
+## 🚀 How to Run (Reproducibility)
+
+**1️⃣ Clone the repository**
 ```bash
-# Cloner le repo
-git clone https://github.com/<your-username>/adversarial-ids.git
+git clone https://github.com/yourusername/adversarial-ids.git
 cd adversarial-ids
-
-# Environnement virtuel
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Dépendances
-pip install -r requirements.txt
 ```
 
-### Reproduire les expériences
-
+**2️⃣ Install dependencies**
 ```bash
-# 1. Entraîner le modèle baseline
-python src/train_baseline.py
-
-# 2. Red Teaming
-python src/attacks/cpgd.py --steps 20 --epsilon 0.1
-python src/attacks/pso.py --n-particles 30 --iterations 40
-
-# 3. Blue Teaming
-python src/defense/adversarial_training.py --epochs 20
-
-# 4. Évaluation complète
-python src/evaluate.py --model vacciné
+pip install torch pandas numpy scikit-learn matplotlib tqdm
 ```
 
-### Dépendances principales
+**3️⃣ Download UNSW‑NB15**
+
+Download `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` from the [official source](https://research.unsw.edu.au/projects/unsw-nb15-dataset) and place them in `data/`.
+
+**4️⃣ Train the baseline model**
+```bash
+python train_baseline.py --epochs 20 --batch_size 256
+```
+
+**5️⃣ Run Red Team attacks**
+```bash
+# CPGD (white-box)
+python attack_cpgd.py --epsilon 0.05 --iterations 20
+
+# PSO (black-box)
+python attack_pso.py --swarm_size 30 --iterations 50
+```
+
+**6️⃣ Adversarial training (Blue Team)**
+```bash
+python train_adversarial.py --attack cpgd --k_steps 5
+```
+
+**7️⃣ Evaluate robustness**
+```bash
+python evaluate_robustness.py --model adv_model.pth
+```
+
+> 📊 Run `notebooks/full_pipeline.ipynb` to reproduce all numbers, plots, and the comparative table above.
+
+---
+
+## 🧩 Project Structure
 
 ```
-torch >= 2.0
-numpy >= 1.24
-pandas >= 2.0
-scikit-learn >= 1.3
-matplotlib >= 3.7
+adversarial-ids/
+├── 📂 data/                      # UNSW-NB15 csv files
+├── 📂 models/                    # PyTorch model definitions (MLP)
+├── 📂 attacks/
+│   ├── cpgd.py                  # Constrained PGD
+│   ├── pso.py                   # Particle Swarm Optimization
+│   └── constraints.py           # Physical projection P_c
+├── 📂 defense/
+│   └── adversarial_train.py     # Min‑max training loop
+├── 📂 utils/
+│   ├── preprocessing.py         # Feature selection, normalisation, split
+│   └── metrics.py               # ASR, precision, recall, F1
+├── 📂 notebooks/
+│   └── full_pipeline.ipynb      # End-to-end reproducibility notebook
+├── config.yaml                  # Hyperparameters
+├── train_baseline.py
+├── evaluate.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 📐 Dataset : UNSW-NB15
+## 🧠 Discussion: The White‑Box vs Black‑Box Paradox
 
-| Attribut | Valeur |
-|:---------|:-------|
-| Source | Cyber Range Lab, UNSW Sydney (2015) |
-| Instances | ~82 500 |
-| Features brutes | 49 → **42 sélectionnées** |
-| Classes | Bénin (0) / Attaque (1) |
-| Équilibre | 51% bénin / 49% attaque |
-| Familles d'attaques | DoS, Exploits, Fuzzers, Generic, Reconnaissance, Shellcode, Worms, Backdoor, Analysis |
+> How can a black‑box attack (PSO, **97.95%**) outperform a white‑box gradient attack (CPGD, **53.23%**) on the same model?
 
-**Pipeline de pré-traitement :**
-1. Suppression des colonnes non-numériques (`proto`, `service`, `state`)
-2. Normalisation z-score calculée **uniquement sur le train set**
-3. Split stratifié 80% / 20%
+**Explanation:** The constrained projection $\mathcal{P}_c$ removes gradient information in unilateral dimensions. This creates **gradient masking** — the remaining gradient points to suboptimal directions. PSO, being derivative‑free, does not suffer from this and can traverse the non‑convex loss landscape more globally.
+
+**Implication:** Never trust white‑box robustness alone. Always include black‑box evaluations (evolutionary, query‑based) to uncover hidden blind spots.
 
 ---
 
-## 📈 Métriques
+## 🔮 Future Work
 
-**Attack Success Rate (ASR) :**
+| Timeframe | Direction |
+|:----------|:----------|
+| Short‑term | Mixed adversarial training (CPGD + PSO) to drive PSO ASR below 10% |
+| Short‑term | Randomized smoothing for certified robustness bounds |
+| Mid‑term | Multi‑label IDS (9 attack families) to study per‑family robustness |
+| Mid‑term | Adaptive attacker that knows the defense strategy |
+| Long‑term | Deployment on real PCAP traffic with online feature extraction |
+| Long‑term | Federated Learning setting for distributed IoT intrusion detection |
 
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Authors
+
+**Ayman MIDAN** · **Mohamed EL HARCHALI**
+
+Under the supervision of **Pr. Tarik FISSAA**
+Deep Learning module — Institut National des Postes et Télécommunications (INPT)
+Academic year 2025–2026
+
+---
+
+## 📚 References
+
+1. Madry et al. (2018) – *Towards Deep Learning Models Resistant to Adversarial Attacks*
+2. Kennedy & Eberhart (1995) – *Particle Swarm Optimization*
+3. Moustafa & Slay (2015) – *UNSW-NB15 dataset*
+4. Goodfellow et al. (2015) – *Explaining and Harnessing Adversarial Examples (FGSM)*
+
+---
+
+## ⭐ If you find this work useful
+
+Please **star this repository** and cite the project:
+
+```bibtex
+@misc{midan2025adversarialids,
+  author    = {Midan, Ayman and El Harchali, Mohamed},
+  title     = {Adversarial Machine Learning Applied to Intrusion Detection Systems},
+  year      = {2025},
+  publisher = {GitHub},
+  howpublished = {\url{https://github.com/yourusername/adversarial-ids}}
+}
 ```
-ASR = |{x ∈ D_atk : f(x)=1 ∧ f(x_adv)=0}|
-      ─────────────────────────────────────
-              |{x ∈ D_atk : f(x)=1}|
-
-ASR = 100% → L'IDS ne détecte plus aucune attaque
-ASR = 0%   → L'IDS résiste parfaitement
-```
 
 ---
-
-## 🔬 Limites & Perspectives
-
-### Limites identifiées
-
-- **Dérive temporelle :** UNSW-NB15 date de 2015 ; les attaques modernes (exfiltration DNS/HTTPS, canaux cachés) peuvent ne pas être représentées.
-- **Features catégorielles exclues :** `proto`, `service`, `state` pourraient enrichir la topologie adversariale.
-- **PSO non intégré à la défense :** ASR résiduel de 49.61% — le risque reste substantiel.
-- **Attaquant unique :** Les attaques coordonnées (botnets) ou adaptatives ne sont pas modélisées.
-
-### Perspectives de recherche
-
-**Court terme**
-- [ ] Entraînement adversarial mixte (CPGD + PSO) pour combler les 49.61% résiduels
-- [ ] Randomized Smoothing pour une certification probabiliste de l'ASR
-
-**Moyen terme**
-- [ ] Extension multi-étiquettes sur les 9 familles d'attaques UNSW-NB15
-- [ ] Attaquants adaptatifs (connaissant la stratégie de défense)
-
-**Long terme**
-- [ ] Déploiement sur trafic réel (PCAP) avec extraction automatique de features
-- [ ] Adversarial ML en Federated Learning pour IDS distribués IoT
-
----
-
-## 👥 Auteurs
 
 <div align="center">
 
-| | |
-|:---:|:---:|
-| **Ayman MIDAN** | **Mohamed EL HARCHALI** |
-| [@ayman-midan](https://github.com/) | [@m-elharchali](https://github.com/) |
-
-**Encadrant :** Pr. Tarik FISSAA  
-**Module :** Deep Learning  
-**Institution :** Institut National des Postes et Télécommunications (INPT)  
-**Année :** 2025–2026
-
-</div>
-
----
-
-## 📚 Références
-
-1. Madry, A. et al. — *Towards Deep Learning Models Resistant to Adversarial Attacks* — ICLR 2018
-2. Kennedy, J. & Eberhart, R. — *Particle Swarm Optimization* — IEEE ICNN 1995
-3. Moustafa, N. & Slay, J. — *UNSW-NB15: a comprehensive data set for network intrusion detection systems* — MilCIS 2015
-
----
-
-<div align="center">
-
 ```
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│   La cybersécurité basée sur l'IA ne peut atteindre    │
-│   sa maturité que si ses praticiens intègrent           │
-│   l'Adversarial ML comme un standard d'audit —         │
-│   au même titre que les tests de pénétration.          │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│  "A model that is excellent on clean data can be trivially      │
+│   broken by an informed attacker. Robustness must be earned,    │
+│   certified, and maintained iteratively."                       │
+│                                                                 │
+│                              — Project conclusion               │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+**🔒 Stay secure. Think adversarial.**
 
 *INPT — Deep Learning — 2025-2026*
 
