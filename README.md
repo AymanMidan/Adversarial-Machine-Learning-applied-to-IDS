@@ -26,7 +26,7 @@ We take a complete **build‑break‑fix** cycle:
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
-│   ✅  BUILD     │────▶│   🔴 RED TEAM   │────▶│   🔵 BLUE TEAM  │
+│   ✅  BUILD     ────▶│   🔴 RED TEAM   ────▶│   🔵 BLUE TEAM 
 │                 │     │                 │     │                 │
 │  MLP-based IDS  │     │  CPGD  │  PSO   │     │  Adversarial    │
 │  F1 = 91.52%    │     │ 53.23% │ 97.95% │     │  Training       │
@@ -209,8 +209,9 @@ for epoch in range(E):
 
 **1️⃣ Clone the repository**
 ```bash
-git clone https://github.com/yourusername/adversarial-ids.git
-cd adversarial-ids
+git clone https://github.com/AymanMidan/Adversarial-Machine-Learning-applied-to-IDS
+cd Adversarial-Machine-Learning-applied-to-IDS
+
 ```
 
 **2️⃣ Install dependencies**
@@ -223,32 +224,16 @@ pip install torch pandas numpy scikit-learn matplotlib tqdm
 Download `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` from the [official source](https://research.unsw.edu.au/projects/unsw-nb15-dataset) and place them in `data/`.
 
 **4️⃣ Train the baseline model**
-```bash
-python train_baseline.py --epochs 20 --batch_size 256
-```
+
 
 **5️⃣ Run Red Team attacks**
-```bash
-# CPGD (white-box)
-python attack_cpgd.py --epsilon 0.05 --iterations 20
 
-# PSO (black-box)
-python attack_pso.py --swarm_size 30 --iterations 50
-```
 
 **6️⃣ Adversarial training (Blue Team)**
-```bash
-python train_adversarial.py --attack cpgd --k_steps 5
-```
+
 
 **7️⃣ Evaluate robustness**
-```bash
-python evaluate_robustness.py --model adv_model.pth
-```
 
-> 📊 Run `notebooks/full_pipeline.ipynb` to reproduce all numbers, plots, and the comparative table above.
-
----
 
 ## 🧩 Project Structure
 
@@ -309,10 +294,6 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 **Ayman MIDAN** · **Mohamed EL HARCHALI**
 
-Under the supervision of **Pr. Tarik FISSAA**
-Deep Learning module — Institut National des Postes et Télécommunications (INPT)
-Academic year 2025–2026
-
 ---
 
 ## 📚 References
@@ -332,9 +313,10 @@ Please **star this repository** and cite the project:
 @misc{midan2025adversarialids,
   author    = {Midan, Ayman and El Harchali, Mohamed},
   title     = {Adversarial Machine Learning Applied to Intrusion Detection Systems},
-  year      = {2025},
+  year      = {2026},
   publisher = {GitHub},
-  howpublished = {\url{https://github.com/yourusername/adversarial-ids}}
+  howpublished = {\url{https://github.com/AymanMidan/Adversarial-Machine-Learning-applied-to-IDS
+}}
 }
 ```
 
@@ -355,6 +337,6 @@ Please **star this repository** and cite the project:
 
 **🔒 Stay secure. Think adversarial.**
 
-*INPT — Deep Learning — 2025-2026*
+*Deep Learning — 2025-2026*
 
 </div>
