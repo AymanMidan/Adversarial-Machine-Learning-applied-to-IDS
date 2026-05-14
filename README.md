@@ -239,24 +239,25 @@ Download `UNSW_NB15_training-set.csv` and `UNSW_NB15_testing-set.csv` from the [
 
 ```
 adversarial-ids/
-├── 📂 data/                      # UNSW-NB15 csv files
-├── 📂 models/                    # PyTorch model definitions (MLP)
-├── 📂 attacks/
-│   ├── cpgd.py                  # Constrained PGD
-│   ├── pso.py                   # Particle Swarm Optimization
-│   └── constraints.py           # Physical projection P_c
-├── 📂 defense/
-│   └── adversarial_train.py     # Min‑max training loop
-├── 📂 utils/
-│   ├── preprocessing.py         # Feature selection, normalisation, split
-│   └── metrics.py               # ASR, precision, recall, F1
-├── 📂 notebooks/
-│   └── full_pipeline.ipynb      # End-to-end reproducibility notebook
-├── config.yaml                  # Hyperparameters
-├── train_baseline.py
-├── evaluate.py
-├── requirements.txt
-└── README.md
+│
+├── 📄 Adversarial_IDS.pdf           # Project report
+│
+├── 🐍 pretraitement.py              # Feature selection, z-score normalisation, 80/20 split
+├── 🐍 modele.py                     # MLP architecture (42→64→32→1) + baseline training
+│
+├── 🐍 attaque_cpgd.py               # White-box attack: Constrained PGD
+├── 🐍 attaque_pso.py                # Black-box attack: Particle Swarm Optimization
+│
+├── 🐍 defense_adv_training.py       # Blue Team: adversarial min-max training loop
+│
+├── 💾 mon_baseline_ids.pth          # Saved baseline model weights
+├── 💾 mon_modele_robuste.pth        # Saved adversarially trained model weights
+│
+├── 📊 NUSW-NB15_features.csv        # Feature descriptions
+├── 📊 UNSW_NB15_training-set.csv    # Training set (~82k samples)
+├── 📊 UNSW_NB15_testing-set.csv     # Test set
+│
+└── 📄 README.md
 ```
 
 ---
