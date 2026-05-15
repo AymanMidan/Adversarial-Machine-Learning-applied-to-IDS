@@ -120,7 +120,9 @@ $$[\mathcal{P}_c(\tilde{x})]_j = \begin{cases} \max(\tilde{x}_j, x_j) & \text{if
 **White‑box** (full model access, gradients). Iterative FGSM + projection:
 
 $$\mathbf{g}^{(t)} = \nabla_{\mathbf{x}} \mathcal{L}_{\text{BCE}}(f(\mathbf{x}^{(t)}), 1)$$
+
 $$\tilde{\mathbf{x}}^{(t+1)} = \mathbf{x}^{(t)} + \epsilon \cdot \operatorname{sign}(\mathbf{g}^{(t)})$$
+
 $$\mathbf{x}^{(t+1)} = \mathcal{P}_c(\tilde{\mathbf{x}}^{(t+1)})$$
 
 | Attack Success Rate (ASR) | **53.23%** |
