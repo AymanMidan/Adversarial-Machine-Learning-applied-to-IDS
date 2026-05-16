@@ -293,9 +293,9 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 ---
 
-## 👥 Authors
+## 👥 Author
 
-**Ayman MIDAN** · **Mohamed EL HARCHALI**
+**Ayman MIDAN**
 
 ---
 
@@ -314,7 +314,7 @@ Please **star this repository** and cite the project:
 
 ```bibtex
 @misc{midan2025adversarialids,
-  author    = {Midan, Ayman and El Harchali, Mohamed},
+  author    = Ayman MIDAN},
   title     = {Adversarial Machine Learning Applied to Intrusion Detection Systems},
   year      = {2026},
   publisher = {GitHub},
